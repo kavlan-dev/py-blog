@@ -9,7 +9,7 @@ from py_blog.services.service import PostService
 class PostRouter:
     def __init__(self, service: PostService):
         self.service = service
-        self.router = APIRouter(prefix="/posts", tags=["posts"])
+        self.router = APIRouter(prefix="/api/posts", tags=["posts"])
         self._setup_routes()
 
     def _setup_routes(self):
