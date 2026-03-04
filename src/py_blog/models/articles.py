@@ -6,8 +6,8 @@ class Base(DeclarativeBase):
     pass
 
 
-class Post(Base):
-    __tablename__ = "posts"
+class Article(Base):
+    __tablename__ = "articles"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
@@ -16,4 +16,4 @@ class Post(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     def __repr__(self):
-        return f"<Post {self.title}>"
+        return f"<Article {self.title}>"

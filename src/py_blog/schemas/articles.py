@@ -3,20 +3,20 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class PostBase(BaseModel):
+class ArticleBase(BaseModel):
     title: str
     content: str
 
 
-class PostCreate(PostBase):
+class ArticleCreate(ArticleBase):
     pass
 
 
-class PostUpdate(PostBase):
+class ArticleUpdate(ArticleBase):
     pass
 
 
-class Post(PostBase):
+class Article(ArticleBase):
     id: int
     created_at: datetime
     updated_at: datetime

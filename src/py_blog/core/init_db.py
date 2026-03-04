@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from py_blog.models.post import Base
+from py_blog.models.articles import Base
 
 
 def init_db(database_url: str) -> Session:

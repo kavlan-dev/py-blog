@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:slim
 WORKDIR /app
 
 RUN pip install --upgrade pip && \
