@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from py_blog.schemas.articles import Article, ArticleCreate, ArticleUpdate
+from py_blog.schemas.users import User, UserRegister
 
 
 class IArticleRepository(ABC):
@@ -23,4 +24,14 @@ class IArticleRepository(ABC):
 
     @abstractmethod
     def delete(self, post_id: int) -> bool:
+        pass
+
+
+class IUserRepository(ABC):
+    @abstractmethod
+    def get_by_username(self, username: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    def create(self, user: UserRegister) -> User:
         pass

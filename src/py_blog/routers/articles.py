@@ -9,6 +9,10 @@ from py_blog.services.articles import ArticleService
 router = APIRouter(prefix="/api/articles", tags=["posts"])
 
 
+def get_article_router() -> APIRouter:
+    return router
+
+
 @router.get("", response_model=List[Article])
 async def get_all_article(
     service: ArticleService = Depends(get_post_service),
@@ -53,7 +57,3 @@ async def delete_article(
     if not success:
         raise HTTPException(status_code=404, detail="Post not found")
     return None
-
-
-def get_router() -> APIRouter:
-    return router
