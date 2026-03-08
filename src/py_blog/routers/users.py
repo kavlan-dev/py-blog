@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from py_blog.core.depends import get_user_service
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse
+
+from py_blog.core.depends import get_logger, get_user_service
 from py_blog.core.security import create_jwt_token, get_user_from_token
-from py_blog.schemas.users import UserRegister
+from py_blog.schemas.users import UserLogin, UserRegister
 from py_blog.services.users import UserService
 
 router = APIRouter(prefix="/api/auth", tags=["users"])
@@ -12,34 +13,51 @@ def get_user_router() -> APIRouter:
     return router
 
 
-@router.post("/login")
+@router.post("/login", status_code=status.HTTP_200_OK)
 def login(
-    user: OAuth2PasswordRequestForm = Depends(),
+    user: UserLogin,
+    logger=Depends(get_logger),
     service: UserService = Depends(get_user_service),
 ):
     db_user = service.get_user_by_username(user.username)
     if not db_user:
-        raise HTTPException(status_code=404, detail="user not found")
+        logger.info(f"User not found: {user.username}")
+        return JSONResponse(
+            {"detail": "user not found"}, status_code=status.HTTP_404_NOT_FOUND
+        )
     if user.password != db_user.password:
-        raise HTTPException(status_code=401, detail="invalid credentials")
+        logger.info(f"Invalid credentials for user: {user.username}")
+        return JSONResponse(
+            {"detail": "invalid credentials"}, status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    logger.info(f"Login successful for user: {user.username}")
     token = create_jwt_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.post("/register")
-def register(user: UserRegister, service: UserService = Depends(get_user_service)):
+@router.post(
+    "/register", response_model=UserRegister, status_code=status.HTTP_201_CREATED
+)
+def register(
+    user: UserRegister,
+    logger=Depends(get_logger),
+    service: UserService = Depends(get_user_service),
+):
+    logger.info(f"Registering new user: {user.username}")
     return service.create_user(user)
 
 
-@router.get("/about_me")
+@router.get("/about_me", status_code=status.HTTP_200_OK)
 async def about_me(
     current_user: str = Depends(get_user_from_token),
+    logger=Depends(get_logger),
     service: UserService = Depends(get_user_service),
 ):
-    """
-    Этот маршрут защищен и требует токен. Если токен действителен, мы возвращаем информацию о пользователе.
-    """
     user = service.get_user_by_username(current_user)
     if not user:
-        return {"error": "User not found"}
+        logger.info(f"User not found: {current_user}")
+        return JSONResponse(
+            {"error": "User not found"}, status_code=status.HTTP_404_NOT_FOUND
+        )
+    logger.info(f"About me requested for user: {current_user}")
     return user

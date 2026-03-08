@@ -1,32 +1,42 @@
 import os
+from dataclasses import dataclass
 
 
-class Settings:
-    def __init__(self) -> None:
-        self.db_user = get_env_or_default("DB_USER", "")
-        self.db_pass = get_env_or_default("DB_PASSWORD", "")
-        self.db_host = get_env_or_default("DB_HOST", "db")
-        self.db_name = get_env_or_default("DB_NAME", "")
-        self.secret_key = get_env_or_default("SECRET_KEY", "")
+@dataclass
+class DatabaseConfig:
+    db_user: str
+    db_pass: str
+    db_host: str
+    db_name: str
 
-        if self.db_user == "" or self.db_pass == "" or self.db_name == "":
-            raise Exception("Не верно указаны настройки бд")
+    def get_dsn(self) -> str:
+        return (
+            f"postgresql://{self.db_user}:{self.db_pass}@{self.db_host}/{self.db_name}"
+        )
 
-        if self.secret_key == "":
-            raise Exception("Не указан секретный ключ")
 
-    def get_database_url(self) -> str:
-        return f"postgresql://{self.db_user}:{self.db_pass}@{self.db_host}:5432/{self.db_name}"
+@dataclass
+class Config:
+    db: DatabaseConfig
+    secret_key: str
 
     def get_secret_key(self) -> str:
         return self.secret_key
 
 
-def get_settings() -> Settings:
-    return Settings()
+def load_config() -> Config:
+    return Config(
+        db=DatabaseConfig(
+            db_user=_get_env_or_default("DB_USER", ""),
+            db_pass=_get_env_or_default("DB_PASSWORD", ""),
+            db_host=_get_env_or_default("DB_HOST", "db"),
+            db_name=_get_env_or_default("DB_NAME", ""),
+        ),
+        secret_key=_get_env_or_default("SECRET_KEY", ""),
+    )
 
 
-def get_env_or_default(varName: str, defaultVal: str) -> str:
+def _get_env_or_default(varName: str, defaultVal: str) -> str:
     val = os.getenv(varName)
     if val is None:
         val = defaultVal

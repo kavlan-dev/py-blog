@@ -1,10 +1,10 @@
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from py_blog.core.depends import init_app
 from py_blog.routers.articles import get_article_router
 from py_blog.routers.users import get_user_router
-
 
 app = FastAPI()
 
@@ -20,4 +20,5 @@ app.add_middleware(
 )
 
 if __name__ == "__main__":
+    init_app()
     uvicorn.run(app, host="0.0.0.0", port=8080)

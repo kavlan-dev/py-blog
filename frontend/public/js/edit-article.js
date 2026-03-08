@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const data = await response.json();
-      const article = data.article;
+      const article = data;
 
       if (article) {
         titleInput.value = article.title;
@@ -52,22 +52,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         let response;
         if (articleId) {
           // Update existing article
-          response = await Auth.fetchWithAuth(
-            `/api/admin/articles/${articleId}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                title: title,
-                content: content,
-              }),
+          response = await Auth.fetchWithAuth(`/api/articles/${articleId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
             },
-          );
+            body: JSON.stringify({
+              title: title,
+              content: content,
+            }),
+          });
         } else {
           // Create new article
-          response = await Auth.fetchWithAuth("/api/admin/articles", {
+          response = await Auth.fetchWithAuth("/api/articles", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -98,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (confirm("Вы уверены, что хотите удалить эту статью?")) {
         try {
           const response = await Auth.fetchWithAuth(
-            `/api/admin/articles/${articleId}`,
+            `/api/articles/${articleId}`,
             {
               method: "DELETE",
             },

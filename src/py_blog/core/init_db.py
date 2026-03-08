@@ -6,7 +6,6 @@ from py_blog.models.users import Base as UserBase
 
 
 def init_db(database_url: str) -> Session:
-    """Initialize the database with all tables."""
     engine = create_engine(database_url)
     ArticleBase.metadata.create_all(bind=engine)
     UserBase.metadata.create_all(bind=engine)

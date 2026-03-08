@@ -26,7 +26,7 @@ async function loadArticles() {
     }
 
     const data = await response.json();
-    const articles = data.articles || [];
+    const articles = data || [];
     const articlesList = document.getElementById("articles-list");
 
     if (articles.length === 0) {
@@ -89,12 +89,9 @@ async function loadArticles() {
 
 async function deleteArticle(articleId) {
   try {
-    const response = await Auth.fetchWithAuth(
-      `/api/admin/articles/${articleId}`,
-      {
-        method: "DELETE",
-      },
-    );
+    const response = await Auth.fetchWithAuth(`/api/articles/${articleId}`, {
+      method: "DELETE",
+    });
 
     if (!response.ok) {
       throw new Error("Ошибка удаления статьи");

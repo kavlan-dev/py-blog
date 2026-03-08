@@ -17,9 +17,6 @@ def init_secret_key(secret: str):
 
 
 def create_jwt_token(data: Dict):
-    """
-    Функция для создания JWT токена. Мы копируем входные данные, добавляем время истечения и кодируем токен.
-    """
     to_encode = data.copy()
     expire = datetime.datetime.now() + datetime.timedelta(
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
@@ -29,9 +26,6 @@ def create_jwt_token(data: Dict):
 
 
 def get_user_from_token(token: str = Depends(oauth2_scheme)):
-    """
-    Функция для извлечения информации о пользователе из токена. Проверяем токен и извлекаем утверждение о пользователе.
-    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload.get("sub")
