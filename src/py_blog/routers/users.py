@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from py_blog.core.depends import get_logger, get_user_service
 from py_blog.core.security import create_jwt_token, get_user_from_token
-from py_blog.schemas.users import UserLogin, UserRegister
+from py_blog.schemas.users import User, UserLogin, UserRegister
 from py_blog.services.users import UserService
 
 router = APIRouter(prefix="/api/auth", tags=["users"])
@@ -19,16 +19,11 @@ def login(
     logger=Depends(get_logger),
     service: UserService = Depends(get_user_service),
 ):
-    db_user = service.get_user_by_username(user.username)
+    db_user = service.authenticate_user(user)
     if not db_user:
         logger.info(f"User not found: {user.username}")
         return JSONResponse(
             {"detail": "user not found"}, status_code=status.HTTP_404_NOT_FOUND
-        )
-    if user.password != db_user.password:
-        logger.info(f"Invalid credentials for user: {user.username}")
-        return JSONResponse(
-            {"detail": "invalid credentials"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
     logger.info(f"Login successful for user: {user.username}")
     token = create_jwt_token({"sub": user.username})
@@ -47,7 +42,7 @@ def register(
     return service.create_user(user)
 
 
-@router.get("/about_me", status_code=status.HTTP_200_OK)
+@router.get("/about_me", response_model=User, status_code=status.HTTP_200_OK)
 async def about_me(
     current_user: str = Depends(get_user_from_token),
     logger=Depends(get_logger),

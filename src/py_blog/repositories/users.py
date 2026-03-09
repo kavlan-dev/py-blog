@@ -16,11 +16,15 @@ class UserRepository(IUserRepository):
         return User.model_validate(user) if user else None
 
     def create(self, user: UserRegister) -> User:
-        db_user = UserModel(**user.model_dump())
-        self.db.add(db_user)
-        self.db.commit()
-        self.db.refresh(db_user)
-        return User.model_validate(db_user)
+        try:
+            db_user = UserModel(**user.model_dump())
+            self.db.add(db_user)
+            self.db.commit()
+            self.db.refresh(db_user)
+            return User.model_validate(db_user)
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
 
 def get_user_repository(db: Session) -> IUserRepository:
