@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from py_blog.core.depends import get_logger, get_post_service
-from py_blog.core.security import get_user_from_token
+from py_blog.depends import get_logger, get_post_service
 from py_blog.schemas.articles import Article, ArticleCreate, ArticleUpdate
 from py_blog.services.articles import ArticleService
+from py_blog.utils.security import get_user_from_token
 
 router = APIRouter(prefix="/api/articles", tags=["posts"])
 

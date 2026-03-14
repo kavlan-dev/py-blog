@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from py_blog.core.depends import get_logger, get_user_service
-from py_blog.core.security import create_jwt_token, get_user_from_token
+from py_blog.depends import get_logger, get_user_service
 from py_blog.schemas.users import User, UserLogin, UserRegister
 from py_blog.services.users import UserService
+from py_blog.utils.security import create_jwt_token, get_user_from_token
 
 router = APIRouter(prefix="/api/auth", tags=["users"])
 
